@@ -1,10 +1,29 @@
+using BlazorServer.Docker.Demo.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddDbContextFactory<EmployeeManagerDbContext>(option=>
+option.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 var app = builder.Build();
+
+await EnsureDatabaseIsMigrated(app.Services);
+
+async Task EnsureDatabaseIsMigrated(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    using var context = scope.ServiceProvider.GetService<EmployeeManagerDbContext>();
+
+    if (context is not null)
+    { 
+      await context.Database.MigrateAsync();
+    }
+
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
