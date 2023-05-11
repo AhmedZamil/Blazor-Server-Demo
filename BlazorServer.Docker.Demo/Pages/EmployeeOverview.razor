@@ -1,8 +1,53 @@
-﻿@page "/"
+﻿
+@page "/employees/list"
+@using BlazorServer.Docker.Demo.Data;
+@using BlazorServer.Docker.Demo.Models;
+@using Microsoft.EntityFrameworkCore;
+@inject IDbContextFactory<EmployeeManagerDbContext> ContextFactory
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Employees</PageTitle>
 
-<h1>Home</h1>
+<h1>Employees</h1>
 
-Welcome to the Blazor Server App with Docker Support.
+@if (Employees is null)
+{
+    <div>Loading....</div>
+}
+else
+{
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Is Developer</th>
+                <th>Department</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Employees)
+            {
+                <tr>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.IsDeveloper</td>
+                    <td>@employee.Department?.Name</td>
+                </tr>
+            }
+        </tbody>
 
+    </table>
+}
+
+@code{
+
+    public Employee[]? Employees { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        using var context = ContextFactory.CreateDbContext();
+        Employees = await context.Employees.Include(emp=> emp.Department).ToArrayAsync();
+    }
+
+}
