@@ -1,4 +1,5 @@
 using BlazorServer.Docker.Demo.Data;
+using BlazorServer.Docker.Demo.Shared;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContextFactory<EmployeeManagerDbContext>(option=>
 option.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddScoped<StateContainer>();
 
 var app = builder.Build();
 

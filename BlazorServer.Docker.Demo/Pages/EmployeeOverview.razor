@@ -1,6 +1,7 @@
 ﻿@page "/employees/list/{CurrentPage:int?}"
 @inject IDbContextFactory<EmployeeManagerDbContext> ContextFactory
 @inject NavigationManager NavigationManager
+@inject StateContainer StateContainer
 
 <PageTitle>Employees</PageTitle>
 
@@ -75,6 +76,8 @@ else
         TotalPages = employeeCount == 0
           ? 1
           : (int)Math.Ceiling((double)employeeCount / ItemsPerPage);
+
+        StateContainer.CurrentOverviewPage = CurrentPage.Value;
 
         if (CurrentPage > TotalPages)
         {

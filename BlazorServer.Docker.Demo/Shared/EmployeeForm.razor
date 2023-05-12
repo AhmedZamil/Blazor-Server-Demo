@@ -35,7 +35,7 @@
         @if (IsEdit)
         {
             <button type="submit" class="btn btn-primary" disabled="@IsBusy">Update</button>
-            <button type="button" class="btn btn-secondary" disabled="@IsBusy">Cancel</button>
+            <button type="button" class="btn btn-secondary" disabled="@IsBusy" @onclick="@HandleCancel">Cancel</button>
         }
         else
         {
@@ -60,6 +60,9 @@
     [Parameter]
     public EventCallback<bool> OnSubmit { get; set; }
 
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
 
     public async Task HandleValidSubmit()
     {
@@ -78,6 +81,17 @@
             await OnSubmit.InvokeAsync(false);
         }
 
+    }
+
+    private async Task HandleCancel()
+    {
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();    
+
+        }
+
+        
     }
 
 }
