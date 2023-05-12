@@ -5,56 +5,18 @@
 
 <h3>Add Employee</h3>
 
-@if (Employee is not null)
+<EmployeeForm Employee="@Employee" Departments="@Departments" IsBusy="@IsBusy" OnSubmit="@HandleSubmit"/>
+
+@if (SuccessMessage is not null)
 {
-    <EditForm Model="@Employee" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <div class="mb-3">
-            <label for="firstname" class="form-label">First Name</label>
-            <InputText id="firstname" class="form-control" @bind-Value="Employee.FirstName"></InputText>
-            <ValidationMessage For="()=> Employee.FirstName" />
-        </div>
-        <div class="mb-3">
-            <label for="lastname" class="form-label">Last Name</label>
-            <InputText id="lastname" class="form-control" @bind-Value="Employee.LastName"></InputText>
-            <ValidationMessage For="()=> Employee.LastName" />
-        </div>
+    <br />
+    <div class="alert alert-success">@SuccessMessage</div>
+}
 
-        <div class="mb-3">
-            <label for="department" class="form-label">Department</label>
-            <InputSelect id="department" class="form-select" @bind-Value="Employee.DepartmentId">
-                @if (Departments is not null)
-                {
-                    @foreach (var department in Departments)
-                    {
-                        <option value="@department.Id"> @department.Name</option>
-                    }
-
-                }
-            </InputSelect>
-
-        </div>
-        <div class="mb-3">
-            <label for="isdeveloper" class="form-label">Is Developer ?</label>
-            <InputCheckbox id="isdeveloper" class="form-check-input" @bind-Value="Employee.IsDeveloper"></InputCheckbox>
-        </div>
-        <button type="submit" class="btn btn-primary" disabled="@IsBusy">Add</button>
-
-    </EditForm>
-
-    @if (SuccessMessage is not null)
-    {
-        <br />
-        <div class="alert alert-success">@SuccessMessage</div>
-    }
-
-    @if (ErrorMessage is not null)
-    {
-        <br />
-        <div class="alert alert-danger">@ErrorMessage</div>
-    }
-
+@if (ErrorMessage is not null)
+{
+    <br />
+    <div class="alert alert-danger">@ErrorMessage</div>
 }
 
 @code {
@@ -77,6 +39,20 @@
                 DepartmentId = Departments.FirstOrDefault()?.Id
             };
 
+    }
+    private async Task HandleSubmit(bool isValid)
+    {
+        if (isValid)
+        {
+            await HandleValidSubmit();
+        }
+        else
+        {
+            HandleInvalidSubmit();
+
+        }
+
+    
     }
     private async Task HandleValidSubmit()
     {
