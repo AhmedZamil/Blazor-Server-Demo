@@ -1,0 +1,49 @@
+﻿@page "/employees/edit/{employeeid:int?}"
+
+@inject IDbContextFactory<EmployeeManagerDbContext> ContextFactory
+
+<h1>Edit Employee</h1>
+
+@if (Employee is null && !IsBusy)
+{
+    <div class="alert alert-danger"> Employee with id @EmployeeId is not found !</div>
+
+}
+else
+{
+    <EmployeeForm Employee="@Employee" IsBusy="@IsBusy" Departments="@Departments" IsEdit="true" />
+}
+
+
+
+@code {
+
+    [Parameter]
+    public int EmployeeId { get; set; }     
+
+    private Employee? Employee { get; set; }
+    private Department[]? Departments { get; set; }
+
+    private bool IsBusy { get; set; }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IsBusy = true;
+
+        try
+        {
+            using var context = ContextFactory.CreateDbContext();
+
+            Departments = await context.Departments.OrderBy(dep => dep.Name).ToArrayAsync();
+            Employee = await context.Employees.FirstOrDefaultAsync(emp => emp.Id == EmployeeId);
+        }
+        finally
+        {
+            IsBusy = false;  
+
+        }
+    
+    }
+
+}
